@@ -1,0 +1,421 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Comparison Results of Algorithms
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h1 class="text-center mb-4">
+        Evaluation Results
+    </h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- ========================= -->
+    <!-- CONFUSION MATRIX -->
+    <!-- ========================= -->
+
+    <div class="row">
+
+        <!-- Gaussian NB -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white text-center">
+                    Confusion Matrix - Gaussian NB
+                </div>
+
+                <div class="card-body text-center">
+
+                    {% if cm_nb_img %}
+
+                        <img
+                            src="{{ url_for('static', filename=cm_nb_img) }}"
+                            class="img-fluid rounded shadow-sm"
+                            alt="Confusion Matrix Gaussian NB"
+                        >
+
+                    {% else %}
+
+                        <div class="alert alert-warning mb-0">
+                            Confusion Matrix tidak tersedia.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AdaBoost -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-success text-white text-center">
+                    Confusion Matrix - Gaussian NB + AdaBoost
+                </div>
+
+                <div class="card-body text-center">
+
+                    {% if cm_ab_img %}
+
+                        <img
+                            src="{{ url_for('static', filename=cm_ab_img) }}"
+                            class="img-fluid rounded shadow-sm"
+                            alt="Confusion Matrix Gaussian NB + AdaBoost"
+                        >
+
+                    {% else %}
+
+                        <div class="alert alert-warning mb-0">
+                            Confusion Matrix tidak tersedia.
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row mt-4">
+
+        <!-- Gaussian NB -->
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+                    Classification Report - Gaussian NB
+                </div>
+
+                <div class="card-body table-responsive">
+
+                    <table class="table table-bordered table-striped">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Class</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for cls in labels %}
+                            <tr>
+                                <td>{{ cls }}</td>
+                                <td>{{ "%.2f"|format(report_nb[cls]["precision"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_nb[cls]["recall"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_nb[cls]["f1-score"]*100) }}%</td>
+                                <td>{{ report_nb[cls]["support"] }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            <tr class="table-warning fw-bold">
+                                <td>Macro Avg</td>
+                                <td>{{ "%.2f"|format(report_nb["macro avg"]["precision"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_nb["macro avg"]["recall"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_nb["macro avg"]["f1-score"]*100) }}%</td>
+                                <td>{{ report_nb["macro avg"]["support"] }}</td>
+                            </tr>
+
+                            <tr class="table-info fw-bold">
+                                <td>Weighted Avg</td>
+                                <td>{{ "%.2f"|format(report_nb["weighted avg"]["precision"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_nb["weighted avg"]["recall"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_nb["weighted avg"]["f1-score"]*100) }}%</td>
+                                <td>{{ report_nb["weighted avg"]["support"] }}</td>
+                            </tr>
+
+                            <tr class="table-success fw-bold">
+                                <td>Accuracy</td>
+                                <td colspan="2" class="text-center">-</td>
+                                <td>{{ "%.2f"|format(report_nb["accuracy"]*100) }}%</td>
+                                <td>{{ report_nb["weighted avg"]["support"] }}</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AdaBoost -->
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-success text-white">
+                    Classification Report - Gaussian NB + AdaBoost
+                </div>
+
+                <div class="card-body table-responsive">
+
+                    <table class="table table-bordered table-striped">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Class</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Support</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for cls in labels %}
+                            <tr>
+                                <td>{{ cls }}</td>
+                                <td>{{ "%.2f"|format(report_ab[cls]["precision"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_ab[cls]["recall"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_ab[cls]["f1-score"]*100) }}%</td>
+                                <td>{{ report_ab[cls]["support"] }}</td>
+                            </tr>
+                            {% endfor %}
+
+                            <tr class="table-warning fw-bold">
+                                <td>Macro Avg</td>
+                                <td>{{ "%.2f"|format(report_ab["macro avg"]["precision"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_ab["macro avg"]["recall"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_ab["macro avg"]["f1-score"]*100) }}%</td>
+                                <td>{{ report_ab["macro avg"]["support"] }}</td>
+                            </tr>
+
+                            <tr class="table-info fw-bold">
+                                <td>Weighted Avg</td>
+                                <td>{{ "%.2f"|format(report_ab["weighted avg"]["precision"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_ab["weighted avg"]["recall"]*100) }}%</td>
+                                <td>{{ "%.2f"|format(report_ab["weighted avg"]["f1-score"]*100) }}%</td>
+                                <td>{{ report_ab["weighted avg"]["support"] }}</td>
+                            </tr>
+
+                            <tr class="table-success fw-bold">
+                                <td>Accuracy</td>
+                                <td colspan="2" class="text-center">-</td>
+                                <td>{{ "%.2f"|format(report_ab["accuracy"]*100) }}%</td>
+                                <td>{{ report_ab["weighted avg"]["support"] }}</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- METRIC RESULT -->
+    <!-- ========================= -->
+
+    <div class="row">
+
+        <!-- Gaussian NB -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card border-primary shadow-sm">
+
+                <div class="card-header bg-primary text-white text-center">
+                    Gaussian Naive Bayes
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table">
+
+                        <tr>
+                            <th>Accuracy</th>
+                            <td>{{ acc_nb }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>Precision</th>
+                            <td>{{ prec_nb }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>Recall</th>
+                            <td>{{ rec_nb }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>F1 Score</th>
+                            <td>{{ f1_nb }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>Misclassification Error</th>
+                            <td>{{ mis_nb }}%</td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AdaBoost -->
+
+        <div class="col-md-6 mb-4">
+
+            <div class="card border-success shadow-sm">
+
+                <div class="card-header bg-success text-white text-center">
+                    Gaussian NB + AdaBoost
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table">
+
+                        <tr>
+                            <th>Accuracy</th>
+                            <td>{{ acc_ab }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>Precision</th>
+                            <td>{{ prec_ab }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>Recall</th>
+                            <td>{{ rec_ab }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>F1 Score</th>
+                            <td>{{ f1_ab }}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>Misclassification Error</th>
+                            <td>{{ mis_ab }}%</td>
+                        </tr>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- COMPARISON TABLE -->
+    <!-- ========================= -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header fw-bold">
+            Algorithm Comparison
+        </div>
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-striped">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Model</th>
+                        <th>Accuracy</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1 Score</th>
+                        <th>Misclassification Error</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Gaussian NB</td>
+                        <td>{{ acc_nb }}%</td>
+                        <td>{{ prec_nb }}%</td>
+                        <td>{{ rec_nb }}%</td>
+                        <td>{{ f1_nb }}%</td>
+                        <td>{{ mis_nb }}%</td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>Gaussian NB + AdaBoost</td>
+                        <td>{{ acc_ab }}%</td>
+                        <td>{{ prec_ab }}%</td>
+                        <td>{{ rec_ab }}%</td>
+                        <td>{{ f1_ab }}%</td>
+                        <td>{{ mis_ab }}%</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+    <div class="card shadow-sm mt-4">
+
+        <div class="card-header bg-dark text-white">
+            Comparison of Sentiment Distribution
+        </div>
+
+        <div class="card-body text-center">
+
+            <img
+                src="{{ url_for('static', filename=sentiment_chart) }}"
+                class="img-fluid"
+                alt="Sentiment Comparison Chart"
+            >
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

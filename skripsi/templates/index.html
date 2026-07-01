@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Review Sentiment Classification
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Flash message -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="row">
+                <div class="col-md-12">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- FORM INPUT -->
+    <div class="card shadow-sm mt-3">
+        <div class="card-header bg-primary text-white">
+            
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="form-group">
+                    <label><b>Enter Text Comment *</b></label>
+                    <textarea name="text" class="form-control" rows="6" required>{{ input_text }}</textarea>
+                </div>
+                <center>
+                    <button type="submit" class="btn btn-success ">
+                        Submit
+                    </button>
+                </center>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- INPUT RESULT -->
+    {% if input_text %}
+    <div class="card mt-4">
+        <div class="card-header">
+            Text Comment:
+        </div>
+        <div class="card-body">
+            <p>{{ input_text }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- PREDICTION RESULT -->
+    {% if prediction %}
+    <div class="card mt-3">
+        <div class="card-header">
+            Classification Result:
+        </div>
+        <div class="card-body">
+            <h4>
+                {% if prediction == "Positive" %}
+                    <span class="text-success">{{ prediction }}</span>
+                {% elif prediction == "Negative" %}
+                    <span class="text-danger">{{ prediction }}</span>
+                {% else %}
+                    <span class="text-warning">{{ prediction }}</span>
+                {% endif %}
+            </h4>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

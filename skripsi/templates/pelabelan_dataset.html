@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block title %}Dataset Labeling{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h1 class="text-center">Dataset Labeling</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+     <!-- FORM UPLOAD -->
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Upload Excel Dataset File <font style="color:red">*</font></label>
+            <input class="form-control" type="file" id="file" name="file" accept=".xlsx, .xls, .csv">
+        </div>
+        <button type="submit" class="btn btn-primary" style="float:right">Upload</button>
+    </form>
+
+     <br><br>
+
+    <!-- DOWNLOAD LINK -->
+    {% if download_link %}
+    <div class="mt-4 text-center">
+
+        <!-- JUDUL -->
+        <h1 class="mb-3">Result</h1>
+
+        <!-- BUTTON DOWNLOAD -->
+        <div>
+            {{ download_link|safe }}
+        </div>
+
+    </div>
+    {% endif %}
+
+    <br>
+
+    <!-- TABLE -->
+    {% if tables %}
+    <div class="table-responsive mt-3">
+
+        <table id="example" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Review Text</th>
+                    <th>Sentiment</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in tables %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ row['clean_text'] }}</td>
+                    <td>{{ row['sentiment'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

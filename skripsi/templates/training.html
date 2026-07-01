@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+{% block title %}Dataset Labeling{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h1 class="text-center">Training Model</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="row">
+                <div class="col-md-12">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+    <br>
+     <div class="row">
+        <div class="col-md-12 table-responsive">
+            <table id="example" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>ID</th>
+                        <th>Review Text</th>
+                        <th>Translated Text</th>
+                        <th>Clean Text</th>
+                        <th>Sentiment</th>
+                    </tr>
+                </thead>
+               <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <br>
+
+    <form method="POST">
+
+        <div class="card shadow">
+
+            <div class="card-body">
+
+                <h5>Parameter BERT</h5>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <label>Max Length <font style="color:red">*</font></label>
+                        <input type="number"
+                               name="max_length"
+                               class="form-control"
+                               value="{{setting.max_length_bert}}" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Batch Size <font style="color:red">*</font></label>
+                        <input type="number"
+                               name="batch_size"
+                               class="form-control"
+                               value="{{setting.batch_size_bert}}" required>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h5>Parameter Naive Bayes</h5>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label>
+                            Var Smoothing <font style="color:red">*</font>
+                        </label>
+
+                        <input type="text"
+                               name="var_smoothing"
+                               class="form-control"
+                               value="{{setting.var_smoothing_nb}}" required>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <h5>Parameter AdaBoost</h5>
+
+                <div class="row">
+
+                    <div class="col-md-4">
+
+                        <label>
+                            N Estimators <font style="color:red">*</font>
+                        </label>
+
+                        <input type="number"
+                               name="n_estimators"
+                               class="form-control"
+                               value="{{setting.n_estimators_ab}}" required>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>
+                            Learning Rate <font style="color:red">*</font>
+                        </label>
+
+                        <input type="text"
+                               name="learning_rate"
+                               class="form-control"
+                               value="{{setting.learning_rate_ab}}" required>
+
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-4">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Training Dataset
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+{% block javascriptdatatable %}
+<!-- DataTables JavaScript -->
+<script type="text/javascript" src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='dataTables.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='dataTables.bootstrap5.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        // Inisialisasi DataTable
+        $('#example').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "/api/training_dataset",
+                type: "GET"
+            },
+            pageLength: 10,
+            columns: [
+                {
+                    data: null,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                { data: "review_id" },
+                { data: "content" },
+                { data: "translated_text" },
+                { data: "clean_text" },
+                {
+                    data: "sentiment",
+                    render: function(data) {
+                        return `<span class="badge bg-primary">${data}</span>`;
+                    }
+                }
+            ]
+        });
+
+    });
+</script>
+{% endblock %}

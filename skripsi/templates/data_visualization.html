@@ -1,0 +1,218 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Data Visualization
+{% endblock %}
+
+{% block cssdatatable %}
+<link rel="stylesheet" href="{{ url_for('static', filename='dataTables.bootstrap5.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3 class="text-center mb-4">Data Visualization</h3>
+
+    <div class="row">
+
+        <div class="col-md-6">
+            <h5 class="text-center">Using VADER Lexicon</h5>
+            <canvas id="gtChart"></canvas>
+        </div>
+
+        <div class="col-md-6">
+            <h5 class="text-center">Using NB + AdaBoost</h5>
+            <canvas id="nbChart"></canvas>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h5 class="text-center mt-4">All Review Data</h5>
+
+    <table id="example" class="table table-bordered table-striped">
+
+        <thead>
+
+            <tr>
+                <th>No</th>
+                <th>Review ID</th>
+                <th>Review Text</th>
+                <th>VADER Lexicon</th>
+                <th>Naive Bayes + AdaBoost</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
+
+{% block javascriptdatatable %}
+
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='dataTables.bootstrap5.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+$(document).ready(function () {
+
+    $('#example').DataTable({
+
+        processing: true,
+        serverSide: true,
+
+        ajax: {
+            url: "/api/data_visualization",
+            type: "GET"
+        },
+
+        columns: [
+
+            {
+                data: null,
+                render: function(data, type, row, meta){
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            },
+
+            { data: "review_id" },
+
+            { data: "text" },
+
+            { data: "ground_truth" },
+
+            { data: "nb_ada" }
+
+        ]
+
+    });
+
+    const labels = {{ labels|tojson }};
+    const gt = {{ gt_values|tojson }};
+    const nb = {{ nb_values|tojson }};
+
+    // Ground Truth
+    new Chart(document.getElementById("gtChart"), {
+
+        type: "bar",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: "Ground Truth",
+
+                data: gt,
+
+                backgroundColor: [
+                    "#dc3545",
+                    "#ffc107",
+                    "#198754"
+                ]
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    display: false
+
+                }
+
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    // NB AdaBoost
+    new Chart(document.getElementById("nbChart"), {
+
+        type: "bar",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: "Naive Bayes + AdaBoost",
+
+                data: nb,
+
+                backgroundColor: [
+                    "#dc3545",
+                    "#ffc107",
+                    "#198754"
+                ]
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    display: false
+
+                }
+
+            },
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true
+
+                }
+
+            }
+
+        }
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

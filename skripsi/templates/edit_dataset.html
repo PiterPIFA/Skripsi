@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Edit Dataset
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h1 class="text-center">Edit Dataset</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <a class="btn btn-danger mb-3" href="{{ url_for('dataset') }}">
+        Back
+    </a>
+
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+
+            <form method="POST">
+
+                <div class="form-group mb-3">
+                    <label>Review ID</label>
+                    <input type="text"
+                           name="review_id"
+                           class="form-control"
+                           value="{{ data.review_id }}"
+                           required>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Review Text</label>
+                    <textarea name="content"
+                              class="form-control"
+                              rows="5"
+                              required>{{ data.content }}</textarea>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Score</label>
+                    <select name="score" class="form-control" required>
+                        <option value="1" {% if data.score==1 %}selected{% endif %}>1</option>
+                        <option value="2" {% if data.score==2 %}selected{% endif %}>2</option>
+                        <option value="3" {% if data.score==3 %}selected{% endif %}>3</option>
+                        <option value="4" {% if data.score==4 %}selected{% endif %}>4</option>
+                        <option value="5" {% if data.score==5 %}selected{% endif %}>5</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Sentiment</label>
+                    <select name="sentiment" class="form-control" required>
+                        <option value="Positive" {% if data.sentiment=='positive' %}selected{% endif %}>Positive</option>
+                        <option value="Neutral" {% if data.sentiment=='neutral' %}selected{% endif %}>Neutral</option>
+                        <option value="Negative" {% if data.sentiment=='negative' %}selected{% endif %}>Negative</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">
+                    Submit
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
